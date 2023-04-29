@@ -1,191 +1,50 @@
 {% extends 'base.html' %} {% block home_active %}active{% endblock %} {% block
 content %}
-<!-- Begin content block of the page -->
 
-<!-- Main container with a margin-top and margin-bottom of 4 units -->
-<div class="container my-4">
-	<div>
-		<!-- Add a paragraph with a joke intro -->
-		<h3 class="text-center">
-			Looking for some laughter? Enjoy a random joke below!
-		</h3>
-		<!-- Display the loader spinner for fetching jokes -->
-		<div class="text-center my-3">
-			<div
-				class="spinner-border text-primary"
-				role="status"
-				id="loader"
-				style="display: none"
-			>
-				<span class="visually-hidden">Loading...</span>
-			</div>
-		</div>
+<div class="home-container">
+	<div class="home-input-container">
+		<input type="text" class="home-input" value="iron man" id="input-box" />
+		<button class="home-button" id="submit-button">Search</button>
 	</div>
-
-	<!-- Display the joke and the "Get Another Joke" button -->
-	<div class="row justify-content-center align-items-center">
-		<div class="col-md-6 text-center">
-			<p id="joke">{{ joke }}</p>
-			<button class="btn btn-primary" id="get-another-joke">
-				Get Another Joke
-			</button>
-		</div>
-	</div>
+	<div class="home-list"></div>
+	<div class="home-display-container" id="show-container"></div>
+	<button class="btn btn-primary" id="add-character">Add to your collection</button>
 </div>
 
-<!-- Display the image search section title -->
-<h3 class="text-center">Explore a world of images! Enter your search term and discover beautiful pictures.</h3>
-
-<!-- Create the search form -->
-<div class="lg-6 container my-4">
-	<div class="row justify-content-center">
-		<div class="col col-lg-6">
-			<form class="d-flex" role="search" id="search-form">
-				<input
-					class="form-control me-2"
-					type="search"
-					id="search-query"
-					placeholder="Search for images..."
-					aria-label="Search"
-				/>
-				<button class="btn btn-outline-success" type="submit">
-					Search
-				</button>
-			</form>
-		</div>
-	</div>
-</div>
-
-<!-- Display the loader spinner for fetching images -->
-<div class="text-center my-3">
-	<div
-		class="spinner-border text-primary"
-		role="status"
-		id="image-loader"
-		style="display: none"
-	>
-		<span class="visually-hidden">Loading...</span>
-	</div>
-</div>
-
-<!-- Display the fetched images -->
-<div class="container">
-	<div class="row">
-		<div class="col-md-12">
-			<div class="image-container"></div>
-		</div>
-	</div>
-</div>
-
-
-
-<!-- Handle form submission and fetch images using AJAX -->
 <script>
-	document
-		.getElementById("search-form")
-		.addEventListener("submit", function (event) {
-			event.preventDefault();
+	const addButton = document.querySelector("#add-character");
 
-			const query = document.getElementById("search-query").value;
-			const formData = new FormData();
-			formData.append("query", query);
+	addButton.addEventListener("click", async () => {
+		const characterName =
+			document.querySelector(".character-name").textContent;
+		const characterDescription = document.querySelector(
+			".character-description"
+		).textContent;
+		const comics = document.querySelector(
+			".comics"
+		).textContent;
+		const characterImage = document.querySelector(".character-image").src;
 
-			// Show the loader and hide the image container
-			document.getElementById("image-loader").style.display =
-				"inline-block";
-			document.querySelector(".image-container").style.display = "none";
-
-			// Fetch images from the server and display them
-			fetch("/search_image", {
-				method: "POST",
-				body: formData,
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					const imageContainer =
-						document.querySelector(".image-container");
-					imageContainer.innerHTML = "";
-
-					data.images.forEach((imageUrl) => {
-						const img = document.createElement("img");
-						img.src = imageUrl;
-						img.classList.add("img-thumbnail", "col-md-4", "mb-4");
-						imageContainer.appendChild(img);
-					}); // Hide the loader and show the image container
-					document.getElementById("image-loader").style.display =
-						"none";
-					imageContainer.style.display = "block";
-				});
+		const response = await fetch("/add_character", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				name: characterName,
+				description: characterDescription,
+				comics: comics,
+				image: characterImage,
+			}),
 		});
-</script>
 
-<!-- Fetch images when the form is submitted -->
-<script>
-	document
-		.getElementById("search-form")
-		.addEventListener("submit", function (event) {
-			event.preventDefault();
-
-			const query = document.getElementById("search-query").value;
-			const formData = new FormData();
-			formData.append("query", query);
-
-			fetch("/search_image", {
-				method: "POST",
-				body: formData,
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					const imageContainer =
-						document.querySelector(".image-container");
-					imageContainer.innerHTML = "";
-
-					data.images.forEach((imageUrl) => {
-						const img = document.createElement("img");
-						img.src = imageUrl;
-						img.classList.add("img-thumbnail", "col-md-4", "mb-4");
-						imageContainer.appendChild(img);
-					});
-				});
-		});
-</script>
-
-<!-- Fetch a new joke when the "Get Another Joke" button is clicked -->
-<script>
-	document
-		.getElementById("get-another-joke")
-		.addEventListener("click", function () {
-			fetch("/get_joke", {
-				method: "POST",
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					document.getElementById("joke").innerText = data.joke;
-				});
-		});
-</script>
-
-<!-- Show the loader when fetching a new joke and hide it when the joke is fetched -->
-<script>
-	const jokeElement = document.getElementById("joke");
-	const loaderElement = document.getElementById("loader");
-
-	document
-		.getElementById("get-another-joke")
-		.addEventListener("click", function () {
-			loaderElement.style.display = "inline-block";
-			jokeElement.style.display = "none";
-
-			fetch("/get_joke", {
-				method: "POST",
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					jokeElement.innerText = data.joke;
-					jokeElement.style.display = "block";
-					loaderElement.style.display = "none";
-				});
-		});
+		const data = await response.json();
+		if (data.success) {
+			alert("Character added to your collection! Add another, or go to Profile to view your collection.");
+		} else {
+			alert("Failed to add character to your collection");
+		}
+	});
 </script>
 
 {% endblock %}

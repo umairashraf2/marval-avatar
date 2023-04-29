@@ -1,0 +1,87 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container">
+	<div class="card mx-auto my-4" style="width: 30rem">
+		<div class="card-header text-center font-weight-bold">
+			{{ current_user.name }}'s Profile
+		</div>
+		<div class="card-body">
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item">
+					<strong>Name: </strong> {{ current_user.name }}
+				</li>
+				<li class="list-group-item">
+					<strong>Email: </strong> {{ current_user.email }}
+				</li>
+				<li class="list-group-item">
+					<strong>Joined: </strong> {{
+					to_est(current_user.date_created).strftime('%m-%d-%y %I:%M
+					%p') }}
+				</li>
+			</ul>
+		</div>
+	</div>
+	{% if characters %}
+	<h2 class="text-center my-4">Marvel Characters</h2>
+	<div class="row">
+		{% for character in characters %}
+		<div class="col-md-4 my-4">
+			<div class="card mx-auto" style="width: 100%">
+				<img
+					class="card-img-top"
+					src="{{ character.image }}"
+					alt="{{ character.name }}"
+				/>
+				<div class="card-body">
+					<h4 class="card-title">{{ character.name }}</h4>
+					<p>
+						<strong>Added:</strong> {{
+						to_est(character.date_created).strftime('%m-%d-%y %I:%M
+						%p') }}
+					</p>
+					<strong>{{character.comics}}</strong>
+					<p class="card-text">{{ character.description }}</p>
+					<button
+						class="btn btn-danger"
+						id="delete-character"
+						data-character-id="{{ character.id }}"
+					>
+						Delete
+					</button>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	{% else %}
+	<h2 class="text-center my-4">No Marvel Characters Found</h2>
+	{% endif %}
+	<div class="d-flex justify-content-center">
+		<a class="btn btn-primary my-4" href="{{ url_for('home') }}"
+			>Back to Home</a
+		>
+	</div>
+</div>
+
+<script>
+	const deleteButtons = document.querySelectorAll("#delete-character");
+
+	deleteButtons.forEach((button) => {
+		button.addEventListener("click", async (event) => {
+			const characterId = event.target.getAttribute("data-character-id");
+
+			const response = await fetch(`/delete_character/${characterId}`, {
+				method: "DELETE",
+			});
+
+			const data = await response.json();
+			if (data.success) {
+				alert("Character deleted from your collection!");
+				window.location.reload();
+			} else {
+				alert("Failed to delete character from your collection");
+			}
+		});
+	});
+</script>
+
+{% endblock %}

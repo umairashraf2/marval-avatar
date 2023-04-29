@@ -1,11 +1,17 @@
 {% extends 'base.html' %} {% block content %}
-<!-- Begin content block of the page -->
-
-<!-- Login -->
 <div class="container">
-	<h1 class="text-center my-4">Login</h1>
-	<form action="{{ url_for('login') }}" method="post">
+	<h1 class="text-center my-4">Register</h1>
+	<form action="{{ url_for('register') }}" method="post">
 		{{ form.csrf_token }}
+		<div class="form-group my-3 has-validation">
+			{{ form.name.label }}<br />
+			{{ form.name(class="form-control" + (" is-invalid" if
+			form.name.errors else "")) }} {% if form.name.errors %}
+			<div class="invalid-feedback">
+				{% for error in form.name.errors %} {{ error }} {% endfor %}
+			</div>
+			{% endif %}
+		</div>
 		<div class="form-group my-3 has-validation">
 			{{ form.email.label }}<br />
 			{{ form.email(class="form-control" + (" is-invalid" if
@@ -21,6 +27,17 @@
 			form.password.errors else "")) }} {% if form.password.errors %}
 			<div class="invalid-feedback">
 				{% for error in form.password.errors %} {{ error }} {% endfor %}
+			</div>
+			{% endif %}
+		</div>
+		<div class="form-group my-3 has-validation">
+			{{ form.confirm_password.label }}<br />
+			{{ form.confirm_password(class="form-control" + (" is-invalid" if
+			form.confirm_password.errors else "")) }} {% if
+			form.confirm_password.errors %}
+			<div class="invalid-feedback">
+				{% for error in form.confirm_password.errors %} {{ error }} {%
+				endfor %}
 			</div>
 			{% endif %}
 		</div>
