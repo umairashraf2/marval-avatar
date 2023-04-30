@@ -1,1 +1,1 @@
-gunicorn "drone_inventory:app"
+gunicorn "marval_avatar:app"
