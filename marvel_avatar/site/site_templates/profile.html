@@ -56,7 +56,7 @@
 	<h2 class="text-center my-4">No Marvel Characters Found</h2>
 	{% endif %}
 	<div class="d-flex justify-content-center">
-		<a class="btn btn-primary my-4" href="{{ url_for('home') }}"
+		<a class="btn btn-primary my-4" href="{{ url_for('site.home') }}"
 			>Back to Home</a
 		>
 	</div>
@@ -69,7 +69,7 @@
 		button.addEventListener("click", async (event) => {
 			const characterId = event.target.getAttribute("data-character-id");
 
-			const response = await fetch(`/delete_character/${characterId}`, {
+			const response = await fetch(`/api/delete_character/${characterId}`, {
 				method: "DELETE",
 			});
 

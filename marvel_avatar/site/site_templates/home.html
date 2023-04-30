@@ -25,7 +25,7 @@ content %}
 		).textContent;
 		const characterImage = document.querySelector(".character-image").src;
 
-		const response = await fetch("/add_character", {
+		const response = await fetch("/api/add_character", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

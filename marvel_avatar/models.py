@@ -1,7 +1,17 @@
-from app import db, login_manager
 from datetime import datetime
-from flask_login import UserMixin
+from flask_login import UserMixin,LoginManager
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 import uuid
+
+
+db = SQLAlchemy()
+ma = Marshmallow()
+login_manager = LoginManager()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 class User(UserMixin, db.Model):
     id = db.Column(db.String(36), primary_key=True, default=str(uuid.uuid4()))
@@ -11,10 +21,6 @@ class User(UserMixin, db.Model):
     token = db.Column(db.String(128), unique=True, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     characters = db.relationship('MarvelCharacter', backref='user', lazy=True)
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
 
 class MarvelCharacter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
